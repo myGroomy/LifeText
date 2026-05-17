@@ -22,12 +22,29 @@ app = FastAPI(
 
 settings = get_settings()
 
-# CORS middleware
+# CORS middleware - Secure configuration
+# Development: Allow localhost only
+# Production: Whitelist specific domains
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+]
+
+# Add production domains if not in debug mode
+if not settings.debug:
+    allowed_origins = [
+        "https://lifetext.app",
+        "https://www.lifetext.app",
+        "https://api.lifetext.app",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.debug else ["https://lifetext.app"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["*"],
 )
 

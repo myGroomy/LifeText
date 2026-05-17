@@ -4,15 +4,15 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: lifetext
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: lifetext
+      POSTGRES_USER: ${POSTGRES_USER:-lifetext}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lifetext_dev_password_change_in_prod}
+      POSTGRES_DB: ${POSTGRES_DB:-lifetext}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lifetext"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lifetext}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -33,10 +33,11 @@ services:
     build: .
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://lifetext:password@postgres:5432/lifetext
-      - REDIS_URL=redis://redis:6379
-      - DEBUG=true
+      - DATABASE_URL=${DATABASE_URL:-postgresql://lifetext:lifetext_dev_password_change_in_prod@postgres:5432/lifetext}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
     depends_on:
       postgres:
         condition: service_healthy
@@ -48,10 +49,11 @@ services:
 
   celery_worker:
     build: .
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://lifetext:password@postgres:5432/lifetext
-      - REDIS_URL=redis://redis:6379
-      - DEBUG=true
+      - DATABASE_URL=${DATABASE_URL:-postgresql://lifetext:lifetext_dev_password_change_in_prod@postgres:5432/lifetext}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
     depends_on:
       - postgres
       - redis
