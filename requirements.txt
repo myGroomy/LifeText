@@ -9,7 +9,7 @@ psycopg2-binary==2.9.9
 alembic==1.13.0
 celery==5.3.4
 redis==5.0.1
-openai-whisper==20250625
+faster-whisper
 
 # LLM Providers (install what you need)
 anthropic>=0.7.8
